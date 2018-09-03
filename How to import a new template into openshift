@@ -1,0 +1,95 @@
+
+How to import a new template into openshift.
+Openshift 3 store all gloabl templates that appear in catalog under a project called "openshift". 
+So in order to create a new template or update an existing once, you have to do the following:
+
+1- Using Openshift console web interface
+ - Login into Openshift console web interface
+ - Navigate into openshift project - this require permission
+ - Navigate to "Add to Project"->"Import YAML / JSON"
+ - browse the template file or paste it.
+ - press create
+ - select "Save template"
+ - Press continue.
+
+2- Using CLI, 
+ - Navigate to openshift project using command: 
+ 	oc project openshift
+ - Execute create command: 
+ 	oc create -f <templatefile>.yml -n openshift
+ - In order to delete a template, 
+	oc delete template <template-name>
+
+ 
+ 
+ Here a sample template file:
+ 
+ kind: Template
+apiVersion: v1
+metadata:
+    name: jmeter
+    labels:
+        template: JMeter
+    "annotations": {
+        "openshift.io/display-name": "JMeter",
+        "description": "JMeter",
+        "tags": "JMeter Template",
+        "openshift.io/long-description": "JMeter.",
+        "openshift.io/provider-display-name": "Sample",
+        "openshift.io/documentation-url": "https://xxxx.com/",
+        "openshift.io/support-url": "https://xxxx.com/",
+    }
+parameters:
+  - name: JMETER_IMAGE
+    displayName: JMeter Image
+    description: "Docker image for JMeter: xxxxx"
+    value: 
+    required: true    
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    generation: 6
+    labels:
+      app: jmeter
+    name: jmeter
+  spec:
+    replicas: 1
+    selector:
+      app: jmeter
+      deploymentconfig: jmeter
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftWebConsole
+        labels:
+          app: jmeter
+          deploymentconfig: jmeter
+      spec:
+        containers:
+        - image: "${JMETER_IMAGE}"
+          imagePullPolicy: Always
+          name: jmeter
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false    
+ 
+ 
