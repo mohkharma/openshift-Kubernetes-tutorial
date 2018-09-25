@@ -1,0 +1,22 @@
+  
+ The below steps discribe how to create new service account in order to use it in Jenkins to push docker images to openshift registry
+ 
+ 1) Login to Openshift cluster:
+  
+        oc login https://master.cload.com:8443 --token=HYcccccc4I8vbcNnNc
+        
+  2) Switch to the project that you want to push the docker images under it, lets say mkharma project
+    oc project mkharma
+  
+  3) Create new service account, 
+    oc create serviceaccount jenkins
+  
+  4) add role 'edit' to the user, this rolle will be effective only within the selected project
+     oc policy add-role-to-user system:image-pusher system:serviceaccount:mkharma:jenkinssa -n mkharma
+ OR
+ grant cluster access to the service account to access all projects
+ 
+      oc adm policy add-cluster-role-to-user system:image-pusher jenkins
+     
+  5) Get token string in order to use it in the external Jenkins
+      oc serviceaccounts get-token jenkins -n mkharma
