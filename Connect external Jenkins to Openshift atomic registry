@@ -20,3 +20,11 @@
      
   5) Get token string in order to use it in the external Jenkins
       oc serviceaccounts get-token jenkins -n mkharma
+
+
+In case you need additional roles to manage openshift externaly from Jenkins, you can add the appropriate role according to the need.
+For more information about Managing Authorization Policiesin Openshift, please refer to the following link
+
+
+https://docs.openshift.com/enterprise/3.0/admin_guide/manage_authorization_policy.html
+
